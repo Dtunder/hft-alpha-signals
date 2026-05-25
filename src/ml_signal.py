@@ -8,11 +8,11 @@ class DecisionTree:
         self.min_samples_split = min_samples_split
         self.tree = None
 
-    def fit(self, X: list[list], y: list[str]):
+    def fit(self, X: list[list], y: list[int]):
         self.tree = self._grow_tree(X, y, depth=0)
         return self
 
-    def predict(self, x: list) -> str:
+    def predict(self, x: list) -> int:
         node = self.tree
         while isinstance(node, dict):
             if x[node['feature_index']] <= node['threshold']:
@@ -115,12 +115,12 @@ class RandomForestSignal:
                 continue
 
             next_ret = (prices[i + 1] - prices[i]) / prices[i]
-            if next_ret > 0.001:
-                label = "BUY"
-            elif next_ret < -0.001:
-                label = "SELL"
+            if next_ret > 0.0005:
+                label = 1
+            elif next_ret < -0.0005:
+                label = -1
             else:
-                label = "HOLD"
+                label = 0
 
             X.append(features)
             y.append(label)
@@ -153,4 +153,11 @@ class RandomForestSignal:
             return "HOLD"
 
         predictions = [tree.predict(features) for tree in self.trees]
-        return Counter(predictions).most_common(1)[0][0]
+        majority = Counter(predictions).most_common(1)[0][0]
+
+        if majority == 1:
+            return "BUY"
+        elif majority == -1:
+            return "SELL"
+        else:
+            return "HOLD"
