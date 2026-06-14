@@ -9,7 +9,6 @@ class HFTAlphaSignals:
     """
     def __init__(self, obi_threshold=0.70):
         self.obi_threshold = obi_threshold
-        # Keep maxlen=3 so it holds the last 3 OBI readings
         self.obi_history = collections.deque(maxlen=3)
         print("[ALPHA] Brain initialized. Monitoring Order Book Imbalance (OBI)...")
 
@@ -28,15 +27,12 @@ class HFTAlphaSignals:
         obi = (total_bid_volume - total_ask_volume) / denominator
         return obi
 
-    def check_signals(self, bids: list, asks: list, funding_rate: float = 0.0) -> tuple[str, float]:
+    def check_signals(self, bids, asks, funding_rate=0.0):
         """
         Scans book depth and generates BUY/SELL triggers.
         """
         obi = self.analyze_order_book(bids, asks)
         
-        # Add the current OBI to history FIRST so the last 3 OBI readings includes the current one
-        self.obi_history.append(obi)
-
         if obi >= self.obi_threshold:
             raw_signal = "BUY"
         elif obi <= -self.obi_threshold:
@@ -59,6 +55,7 @@ class HFTAlphaSignals:
                     if not all(past_obi < 0 for past_obi in self.obi_history):
                         signal = "HOLD"
 
+        self.obi_history.append(obi)
         return signal, obi
 
 if __name__ == "__main__":
