@@ -6,7 +6,6 @@ def test_alpha_signals_contract():
     brain = HFTAlphaSignals(obi_threshold=0.70)
     bids = [[100, 10], [99, 10]]
     asks = [[101, 10], [102, 10]]
-    # ensure signature
     signal, obi = brain.check_signals(bids, asks)
     assert signal in ["BUY", "SELL", "HOLD"]
     assert isinstance(obi, float)
@@ -17,8 +16,7 @@ def test_funding_rate_bias():
     for _ in range(3):
         brain.check_signals([[100, 100]], [[101, 1]]) # OBI > 0
     # Now this would be a BUY, but funding_rate > 0.01%
-    brain.funding_rate = 0.00015
-    signal, obi = brain.check_signals([[100, 100]], [[101, 1]])
+    signal, obi = brain.check_signals([[100, 100]], [[101, 1]], funding_rate=0.00015)
     assert signal == "HOLD"
 
 def test_momentum_filter():
