@@ -27,7 +27,7 @@ class HFTAlphaSignals:
         obi = (total_bid_volume - total_ask_volume) / denominator
         return obi
 
-    def check_signals(self, bids, asks):
+    def check_signals(self, bids: list, asks: list) -> tuple[str, float]:
         """
         Scans book depth and generates BUY/SELL triggers.
         """
