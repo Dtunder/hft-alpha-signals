@@ -12,7 +12,7 @@ class HFTAlphaSignals:
         self.obi_history = collections.deque(maxlen=3)
         print("[ALPHA] Brain initialized. Monitoring Order Book Imbalance (OBI)...")
 
-    def analyze_order_book(self, bids: list, asks: list) -> float:
+    def analyze_order_book(self, bids, asks):
         """
         Calculates OBI: (Bid Volume - Ask Volume) / (Bid Volume + Ask Volume)
         Ranges from -1 (total asks) to 1 (total bids).
@@ -29,7 +29,7 @@ class HFTAlphaSignals:
 
     def check_signals(self, bids: list, asks: list, funding_rate: float = 0.0) -> tuple[str, float]:
         """
-        Scans book depth and generates BUY/SELL triggers. Includes momentum filter and funding rate bias.
+        Scans book depth and generates BUY/SELL triggers.
         """
         obi = self.analyze_order_book(bids, asks)
         
