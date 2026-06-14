@@ -11,12 +11,19 @@ def test_alpha_signals_contract():
     assert isinstance(obi, float)
 
 def test_funding_rate_bias():
-    brain = HFTAlphaSignals(obi_threshold=0.70, funding_rate=0.00015)
+    brain = HFTAlphaSignals(obi_threshold=0.70)
     for _ in range(3):
         brain.check_signals([[100, 100]], [[101, 1]]) # OBI > 0
     # Now this would be a BUY, but funding_rate > 0.01%
-    signal, obi = brain.check_signals([[100, 100]], [[101, 1]])
+    signal, obi = brain.check_signals([[100, 100]], [[101, 1]], funding_rate=0.00015)
     assert signal == "HOLD"
+
+    # Check that it triggers if funding rate is fine
+    brain = HFTAlphaSignals(obi_threshold=0.70)
+    for _ in range(3):
+        brain.check_signals([[100, 100]], [[101, 1]])
+    signal, obi = brain.check_signals([[100, 100]], [[101, 1]], funding_rate=0.0)
+    assert signal == "BUY"
 
 def test_momentum_filter():
     brain = HFTAlphaSignals(obi_threshold=0.70)
@@ -26,10 +33,7 @@ def test_momentum_filter():
     # 2. Second tick strong BUY -> HOLD
     signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "HOLD"
-    # 3. Third tick strong BUY -> HOLD
-    signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
-    assert signal == "HOLD"
-    # 4. Fourth tick strong BUY -> BUY
+    # 3. Third tick strong BUY -> BUY because now length is 3 and all are >0
     signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "BUY"
 
