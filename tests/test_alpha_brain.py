@@ -6,7 +6,6 @@ def test_alpha_signals_contract():
     brain = HFTAlphaSignals(obi_threshold=0.70)
     bids = [[100, 10], [99, 10]]
     asks = [[101, 10], [102, 10]]
-    # Pass exactly 2 positional arguments to enforce strict contract check
     signal, obi = brain.check_signals(bids, asks)
     assert signal in ["BUY", "SELL", "HOLD"]
     assert isinstance(obi, float)
