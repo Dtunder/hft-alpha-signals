@@ -29,7 +29,7 @@ class HFTAlphaSignals:
 
     def check_signals(self, bids: list, asks: list, funding_rate: float = 0.0) -> tuple[str, float]:
         """
-        Scans book depth and generates BUY/SELL triggers.
+        Scans book depth and generates BUY/SELL triggers with Momentum-Confirmation and Funding Rate bias.
         """
         obi = self.analyze_order_book(bids, asks)
         
@@ -49,7 +49,8 @@ class HFTAlphaSignals:
                 if signal == "BUY":
                     if not all(past_obi > 0 for past_obi in self.obi_history):
                         signal = "HOLD"
-                    if funding_rate > 0.0001: # > 0.01%
+                    # Suppress BUY if funding rate > 0.01%
+                    if funding_rate > 0.0001:
                         signal = "HOLD"
                 elif signal == "SELL":
                     if not all(past_obi < 0 for past_obi in self.obi_history):
