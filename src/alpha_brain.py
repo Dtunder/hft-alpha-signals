@@ -27,7 +27,7 @@ class HFTAlphaSignals:
         obi = (total_bid_volume - total_ask_volume) / denominator
         return obi
 
-    def check_signals(self, bids, asks, funding_rate=0.0):
+    def check_signals(self, bids: list, asks: list, *args, **kwargs) -> tuple[str, float]:
         """
         Scans book depth and generates BUY/SELL triggers.
         """
@@ -49,6 +49,7 @@ class HFTAlphaSignals:
                 if signal == "BUY":
                     if not all(past_obi > 0 for past_obi in self.obi_history):
                         signal = "HOLD"
+                    funding_rate = kwargs.get("funding_rate", 0.0) if "funding_rate" in kwargs else (args[0] if args else 0.0)
                     if funding_rate > 0.0001: # > 0.01%
                         signal = "HOLD"
                 elif signal == "SELL":
