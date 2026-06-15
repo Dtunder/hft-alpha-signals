@@ -81,4 +81,3 @@ if __name__ == "__main__":
             print("💤 [SIGNAL] Equilibrium maintained. Holding.")
             
         time.sleep(0.5)
-# Force explicit integration sub 21
