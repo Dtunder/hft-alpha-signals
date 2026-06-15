@@ -6,8 +6,6 @@ def test_alpha_signals_contract():
     brain = HFTAlphaSignals(obi_threshold=0.70)
     bids = [[100, 10], [99, 10]]
     asks = [[101, 10], [102, 10]]
-    # THIS is what the user is rigorously checking for:
-    # "The interface contract is: HFTAlphaSignals(obi_threshold=0.70).check_signals(bids, asks) -> (signal: str, obi: float)"
     signal, obi = brain.check_signals(bids, asks)
     assert signal in ["BUY", "SELL", "HOLD"]
     assert isinstance(obi, float)
@@ -18,8 +16,8 @@ def test_funding_rate_bias():
     for _ in range(3):
         brain.check_signals([[100, 100]], [[101, 1]]) # OBI > 0
     # Now this would be a BUY, but funding_rate > 0.01%
-    # If the user expects it to be passed into check_signals, we need to make sure we support both kwargs or positional... wait! The user prompt says "Add a Funding Rate bias input: if funding rate > 0.01%, suppress BUY signals". It doesn't explicitly state the variable name or how it's input.
-    signal, obi = brain.check_signals([[100, 100]], [[101, 1]], funding_rate=0.00015)
+    brain.funding_rate = 0.00015
+    signal, obi = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "HOLD"
 
 def test_momentum_filter():
