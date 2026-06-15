@@ -13,7 +13,7 @@ class HFTAlphaSignals:
         self.funding_rate = funding_rate
         print("[ALPHA] Brain initialized. Monitoring Order Book Imbalance (OBI)...")
 
-    def analyze_order_book(self, bids, asks):
+    def analyze_order_book(self, bids: list, asks: list) -> float:
         """
         Calculates OBI: (Bid Volume - Ask Volume) / (Bid Volume + Ask Volume)
         Ranges from -1 (total asks) to 1 (total bids).
