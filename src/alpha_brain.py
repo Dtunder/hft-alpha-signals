@@ -81,4 +81,4 @@ if __name__ == "__main__":
             print("💤 [SIGNAL] Equilibrium maintained. Holding.")
             
         time.sleep(0.5)
-# Explicit diff to force submit
+# Explicit diff to trigger test submission
