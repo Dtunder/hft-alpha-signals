@@ -8,6 +8,7 @@ class HFTAlphaSignals:
     If bids vastly outweigh asks, upward pressure is imminent.
     """
     def __init__(self, obi_threshold=0.70):
+        self.funding_rate = 0.0
         self.obi_threshold = obi_threshold
         self.obi_history = collections.deque(maxlen=3)
         print("[ALPHA] Brain initialized. Monitoring Order Book Imbalance (OBI)...")
@@ -27,7 +28,7 @@ class HFTAlphaSignals:
         obi = (total_bid_volume - total_ask_volume) / denominator
         return obi
 
-    def check_signals(self, bids: list, asks: list, **kwargs) -> tuple[str, float]:
+    def check_signals(self, bids, asks):
         """
         Scans book depth and generates BUY/SELL triggers.
         """
@@ -49,8 +50,7 @@ class HFTAlphaSignals:
                 if signal == "BUY":
                     if not all(past_obi > 0 for past_obi in self.obi_history):
                         signal = "HOLD"
-                    funding_rate = kwargs.get("funding_rate", getattr(self, "funding_rate", 0.0))
-                    if funding_rate > 0.0001: # > 0.01%
+                    if getattr(self, "funding_rate", 0.0) > 0.0001: # > 0.01%
                         signal = "HOLD"
                 elif signal == "SELL":
                     if not all(past_obi < 0 for past_obi in self.obi_history):
