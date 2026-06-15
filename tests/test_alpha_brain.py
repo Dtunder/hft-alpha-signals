@@ -16,7 +16,8 @@ def test_funding_rate_bias():
     for _ in range(3):
         brain.check_signals([[100, 100]], [[101, 1]]) # OBI > 0
     # Now this would be a BUY, but funding_rate > 0.01%
-    signal, obi = brain.check_signals([[100, 100]], [[101, 1]], funding_rate=0.00015)
+    brain.funding_rate = 0.00015
+    signal, obi = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "HOLD"
 
 def test_momentum_filter():
