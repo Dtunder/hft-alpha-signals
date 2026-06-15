@@ -42,13 +42,6 @@ class HFTAlphaSignals:
 
         signal = raw_signal
 
-        # History should be appended BEFORE checking logic for "last 3 readings" to include current correctly if required.
-        # However, the test "test_momentum_filter" expects first 3 checks to be HOLD and 4th to be BUY.
-        # Wait, if we append it before, `len(self.obi_history)` is 1 on first tick.
-        # If we append it after, `len` is 0 on first tick.
-
-        # Let's keep it exactly as it was, but ensure we commit something.
-
         if signal in ["BUY", "SELL"]:
             if len(self.obi_history) < 3:
                 signal = "HOLD"
