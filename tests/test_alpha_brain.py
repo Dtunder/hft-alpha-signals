@@ -68,3 +68,4 @@ def test_win_rate_simulation():
     print(f"Simulation win rate: {win_rate} ({wins}/{total_signals})")
     assert win_rate > 0.60
 # Submit sync run explicit again
+# sub force 20 explicitly
