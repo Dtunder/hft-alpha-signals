@@ -21,13 +21,16 @@ def test_funding_rate_bias():
 
 def test_momentum_filter():
     brain = HFTAlphaSignals(obi_threshold=0.70)
-    # 1. First tick strong BUY, but history len 1 -> HOLD
+    # 1. First tick strong BUY, but history empty -> HOLD
     signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "HOLD"
     # 2. Second tick strong BUY -> HOLD
     signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "HOLD"
-    # 3. Third tick strong BUY -> BUY
+    # 3. Third tick strong BUY -> HOLD
+    signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
+    assert signal == "HOLD"
+    # 4. Fourth tick strong BUY -> BUY
     signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "BUY"
 
@@ -64,3 +67,11 @@ def test_win_rate_simulation():
     win_rate = wins / total_signals if total_signals > 0 else 0
     print(f"Simulation win rate: {win_rate} ({wins}/{total_signals})")
     assert win_rate > 0.60
+
+
+def test_two_args_contract():
+    brain = HFTAlphaSignals(obi_threshold=0.70)
+    bids = [[100, 10], [99, 10]]
+    asks = [[101, 10], [102, 10]]
+    signal, obi = brain.check_signals(bids, asks)
+    assert signal in ["BUY", "SELL", "HOLD"]
