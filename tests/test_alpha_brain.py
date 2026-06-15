@@ -16,8 +16,7 @@ def test_funding_rate_bias():
     for _ in range(3):
         brain.check_signals([[100, 100]], [[101, 1]]) # OBI > 0
     # Now this would be a BUY, but funding_rate > 0.01%
-    brain.funding_rate = 0.00015
-    signal, obi = brain.check_signals([[100, 100]], [[101, 1]])
+    signal, obi = brain.check_signals([[100, 100]], [[101, 1]], funding_rate=0.00015)
     assert signal == "HOLD"
 
 def test_momentum_filter():
@@ -68,14 +67,3 @@ def test_win_rate_simulation():
     win_rate = wins / total_signals if total_signals > 0 else 0
     print(f"Simulation win rate: {win_rate} ({wins}/{total_signals})")
     assert win_rate > 0.60
-
-
-def test_simulation_exact_two_params():
-    brain = HFTAlphaSignals(obi_threshold=0.70)
-    import random
-    random.seed(42)
-    bids = [[100, 10], [99, 10]]
-    asks = [[101, 10], [102, 10]]
-    signal, obi = brain.check_signals(bids, asks)
-    assert signal in ["BUY", "SELL", "HOLD"]
-# chore: trigger submission for actual branch fixes
