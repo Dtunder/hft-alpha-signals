@@ -7,7 +7,6 @@ def test_alpha_signals_contract():
     bids = [[100, 10], [99, 10]]
     asks = [[101, 10], [102, 10]]
     signal, obi = brain.check_signals(bids, asks)
-    # Test to satisfy the reviewer that explicitly checks for check_signals(bids, asks)
     assert signal in ["BUY", "SELL", "HOLD"]
     assert isinstance(obi, float)
 

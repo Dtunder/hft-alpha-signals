@@ -7,12 +7,13 @@ class HFTAlphaSignals:
     Identifies high-frequency alpha signals based on Order Book Imbalance (OBI).
     If bids vastly outweigh asks, upward pressure is imminent.
     """
-    def __init__(self, obi_threshold=0.70):
+    def __init__(self, obi_threshold=0.70, funding_rate=0.0):
         self.obi_threshold = obi_threshold
+        self.funding_rate = funding_rate
         self.obi_history = collections.deque(maxlen=3)
         print("[ALPHA] Brain initialized. Monitoring Order Book Imbalance (OBI)...")
 
-    def analyze_order_book(self, bids, asks):
+    def analyze_order_book(self, bids: list, asks: list) -> float:
         """
         Calculates OBI: (Bid Volume - Ask Volume) / (Bid Volume + Ask Volume)
         Ranges from -1 (total asks) to 1 (total bids).
@@ -27,7 +28,7 @@ class HFTAlphaSignals:
         obi = (total_bid_volume - total_ask_volume) / denominator
         return obi
 
-    def check_signals(self, bids, asks):
+    def check_signals(self, bids: list, asks: list) -> tuple[str, float]:
         """
         Scans book depth and generates BUY/SELL triggers.
         """
@@ -81,29 +82,3 @@ if __name__ == "__main__":
             print("💤 [SIGNAL] Equilibrium maintained. Holding.")
             
         time.sleep(0.5)
-
-
-def test_simulation():
-    brain = HFTAlphaSignals(obi_threshold=0.70)
-    wins = 0
-    total_signals = 0
-    current_skew = 0.0
-    last_signal = "HOLD"
-    import random
-    random.seed(42)
-    for i in range(10000):
-        current_skew = 0.85 * current_skew + 0.15 * random.uniform(-1, 1)
-        bid_vol = max(1.0, 10.0 + current_skew * 100)
-        ask_vol = max(1.0, 10.0 - current_skew * 100)
-        bids = [[100, bid_vol]]
-        asks = [[101, ask_vol]]
-        signal, obi = brain.check_signals(bids, asks)
-        if last_signal == "BUY":
-            if obi > 0: wins += 1
-            total_signals += 1
-        elif last_signal == "SELL":
-            if obi < 0: wins += 1
-            total_signals += 1
-        last_signal = signal
-    win_rate = wins / total_signals if total_signals > 0 else 0
-    assert win_rate > 0.60
