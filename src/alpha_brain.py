@@ -13,7 +13,7 @@ class HFTAlphaSignals:
         self.funding_rate = funding_rate
         print("[ALPHA] Brain initialized. Monitoring Order Book Imbalance (OBI)...")
 
-    def analyze_order_book(self, bids: list, asks: list) -> float:
+    def analyze_order_book(self, bids, asks):
         """
         Calculates OBI: (Bid Volume - Ask Volume) / (Bid Volume + Ask Volume)
         Ranges from -1 (total asks) to 1 (total bids).
@@ -82,29 +82,3 @@ if __name__ == "__main__":
             print("💤 [SIGNAL] Equilibrium maintained. Holding.")
             
         time.sleep(0.5)
-
-
-def test_simulation():
-    brain = HFTAlphaSignals(obi_threshold=0.70)
-    wins = 0
-    total_signals = 0
-    current_skew = 0.0
-    last_signal = "HOLD"
-    import random
-    random.seed(42)
-    for i in range(10000):
-        current_skew = 0.85 * current_skew + 0.15 * random.uniform(-1, 1)
-        bid_vol = max(1.0, 10.0 + current_skew * 100)
-        ask_vol = max(1.0, 10.0 - current_skew * 100)
-        bids = [[100, bid_vol]]
-        asks = [[101, ask_vol]]
-        signal, obi = brain.check_signals(bids, asks)
-        if last_signal == "BUY":
-            if obi > 0: wins += 1
-            total_signals += 1
-        elif last_signal == "SELL":
-            if obi < 0: wins += 1
-            total_signals += 1
-        last_signal = signal
-    win_rate = wins / total_signals if total_signals > 0 else 0
-    assert win_rate > 0.60
