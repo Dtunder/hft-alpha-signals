@@ -67,4 +67,3 @@ def test_win_rate_simulation():
     win_rate = wins / total_signals if total_signals > 0 else 0
     print(f"Simulation win rate: {win_rate} ({wins}/{total_signals})")
     assert win_rate > 0.60
-# dummy force
