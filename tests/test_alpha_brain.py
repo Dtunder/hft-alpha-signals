@@ -67,4 +67,4 @@ def test_win_rate_simulation():
     win_rate = wins / total_signals if total_signals > 0 else 0
     print(f"Simulation win rate: {win_rate} ({wins}/{total_signals})")
     assert win_rate > 0.60
-# sub 56 explicitly verify check pass run final integration task sync correctly explicitly properly
+# force test check integration 57
