@@ -7,9 +7,8 @@ class HFTAlphaSignals:
     Identifies high-frequency alpha signals based on Order Book Imbalance (OBI).
     If bids vastly outweigh asks, upward pressure is imminent.
     """
-    def __init__(self, obi_threshold=0.70, funding_rate=0.0):
+    def __init__(self, obi_threshold=0.70):
         self.obi_threshold = obi_threshold
-        self.funding_rate = funding_rate
         self.obi_history = collections.deque(maxlen=3)
         print("[ALPHA] Brain initialized. Monitoring Order Book Imbalance (OBI)...")
 
@@ -28,7 +27,7 @@ class HFTAlphaSignals:
         obi = (total_bid_volume - total_ask_volume) / denominator
         return obi
 
-    def check_signals(self, bids, asks):
+    def check_signals(self, bids, asks, funding_rate=0.0):
         """
         Scans book depth and generates BUY/SELL triggers.
         """
@@ -50,7 +49,7 @@ class HFTAlphaSignals:
                 if signal == "BUY":
                     if not all(past_obi > 0 for past_obi in self.obi_history):
                         signal = "HOLD"
-                    if self.funding_rate > 0.0001: # > 0.01%
+                    if funding_rate > 0.0001: # > 0.01%
                         signal = "HOLD"
                 elif signal == "SELL":
                     if not all(past_obi < 0 for past_obi in self.obi_history):
