@@ -12,27 +12,37 @@ def test_alpha_signals_contract():
 
 def test_funding_rate_bias():
     brain = HFTAlphaSignals(obi_threshold=0.70)
-    # Prime the history
     for _ in range(3):
-        brain.check_signals([[100, 100]], [[101, 1]]) # OBI > 0
-    # Now this would be a BUY, but funding_rate > 0.01%
+        brain.check_signals([[100, 100]], [[101, 1]])
+
+    # Funding rate > 0.01%
     signal, obi = brain.check_signals([[100, 100]], [[101, 1]], funding_rate=0.00015)
     assert signal == "HOLD"
 
+    # Funding rate <= 0.01%
+    signal, obi = brain.check_signals([[100, 100]], [[101, 1]], funding_rate=0.00010)
+    assert signal == "BUY"
+
 def test_momentum_filter():
     brain = HFTAlphaSignals(obi_threshold=0.70)
-    # 1. First tick strong BUY, but history empty -> HOLD
+    # 1. First tick BUY
     signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "HOLD"
-    # 2. Second tick strong BUY -> HOLD
+    # 2. Second tick BUY
     signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "HOLD"
-    # 3. Third tick strong BUY -> HOLD
+    # 3. Third tick BUY
     signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "HOLD"
-    # 4. Fourth tick strong BUY -> BUY
+    # 4. Fourth tick BUY
     signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
     assert signal == "BUY"
+    # 5. Interruption
+    signal, _ = brain.check_signals([[100, 1]], [[101, 100]])
+    assert signal == "HOLD"
+    # 6. Re-attempt BUY, should hold because history contains negative
+    signal, _ = brain.check_signals([[100, 100]], [[101, 1]])
+    assert signal == "HOLD"
 
 def test_win_rate_simulation():
     brain = HFTAlphaSignals(obi_threshold=0.70)
@@ -44,7 +54,6 @@ def test_win_rate_simulation():
 
     random.seed(42)
     for i in range(10000):
-        # Update skew with some momentum
         current_skew = 0.85 * current_skew + 0.15 * random.uniform(-1, 1)
 
         bid_vol = max(1.0, 10.0 + current_skew * 100)

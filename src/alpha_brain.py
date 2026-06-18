@@ -49,7 +49,7 @@ class HFTAlphaSignals:
                 if signal == "BUY":
                     if not all(past_obi > 0 for past_obi in self.obi_history):
                         signal = "HOLD"
-                    if funding_rate > 0.0001: # > 0.01%
+                    if funding_rate > 0.0001:
                         signal = "HOLD"
                 elif signal == "SELL":
                     if not all(past_obi < 0 for past_obi in self.obi_history):
